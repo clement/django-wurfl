@@ -22,6 +22,18 @@ class Device(models.Model):
     actual_device_root = models.BooleanField()
     json_capabilities = models.TextField()
     
+    def get_capability(self, name):
+        """
+        Get a capability from its name, without knowing the group
+        it belongs too
+        """
+        group = {}
+        for group in self.capabilities.values():
+            if group.has_key(name):
+                break
+        return group.get(name)
+
+
     @classmethod
     def get_from_id(cls, device_id):
         d = cls.objects.get(id=device_id)
