@@ -3,7 +3,6 @@ from wurfl.models import Update, Device
 
 from xml import sax
 from django.utils.simplejson.encoder import JSONEncoder
-from django.utils.simplejson.decoder import JSONDecoder
 from time import time
 
 
@@ -11,9 +10,8 @@ class _Handler(sax.ContentHandler):
     def __init__(self):
         # Parsing version flag
         self.parse_version = False
-        # JSON encoder and decoder
+        # JSON encoder
         self.e = JSONEncoder()
-        self.d = JSONDecoder()
         
     def startElement(self, name, attrs):
         if name == 'wurfl':
@@ -33,27 +31,25 @@ class _Handler(sax.ContentHandler):
         elif name == 'group':
             self.current_group = attrs.get('id','')
             self.capabilities[self.current_group] = {}
-        elif name == 'capabilities':
+        elif name == 'capability':
             value = attrs.get('value', '')
             if value == 'true' or value == 'false':
                 value = (value == 'true')
-            if value.isdigit():
+            elif value.isdigit():
                 value = int(value)
                 
-            self.capabilities[self.current_group][attrs.get('id','')] = value
+            self.capabilities[self.current_group][attrs.get('name','')] = value
         
     def endElement(self, name):
         if name == 'device':
             # Process the capabilities
-            self.device['capabilities'] = self.e.encode(self.capabilities)
+            self.device['json_capabilities'] = self.e.encode(self.capabilities)
             
             # Save the device model
             Device.objects.create(**self.device)
             
             # Update the stats
             self.stats['nb_devices'] += 1
-            
-            print "Device with id : %s" % self.device['id']
         elif name == 'wurfl':
             # End of the update
             self.stats['time_for_update'] = time() - self.start_time
