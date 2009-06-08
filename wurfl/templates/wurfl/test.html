@@ -1,0 +1,32 @@
+<html>
+<head/>
+<body>
+
+<h1>WURFL test page</h1>
+
+{% if device %}
+    <p>Device
+        <ul>
+            <li>Matching User agent : {{ device.user_agent }}</li>
+            <li>Device ID : {{ .device.id }}</li>
+            <li>Capabilities :
+                <ul>
+                    {% for group, capabilities in device.capabilities.items %}
+                        <li>Group {{ group }} :
+                            <ul>
+                                {% for name, value in capabilities.items %}
+                                    <li>{{ name }} : {{value }}</li>
+                                {% endfor %}
+                            </ul>
+                        </li>            
+                    {% endfor %}
+                </ul>
+            </li>
+        </ul>
+    </p>
+{% else %}
+    <p>No device detected (did you forget to add `wurfl.context_processors.device` to your `TEMPLATE_CONTEXT_PROCESSORS` settings?)</p>
+{% endif %}
+
+</body>
+</html>
