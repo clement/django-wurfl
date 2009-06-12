@@ -9,17 +9,33 @@ from md5 import new as md5
 
 
 class Update(models.Model):
+    UPDATE_TYPE_WURFL = 0
+    UPDATE_TYPE_PATCH = 1
+    UPDATE_TYPE_HYBRID = 2
+    UPDATE_TYPE_CHOICES = (
+        (UPDATE_TYPE_WURFL, 'WURFL'),
+        (UPDATE_TYPE_PATCH, 'Patch'),
+        (UPDATE_TYPE_HYBRID, 'Hybrid'),
+    )
+
+    update_type = models.IntegerField(choices=UPDATE_TYPE_CHOICES)
     version = models.CharField(max_length=255)
     url = models.URLField()
     update_date = models.DateTimeField(auto_now_add=True)
     time_for_update = models.IntegerField()
     nb_devices = models.IntegerField()
+    nb_merges = models.IntegerField()
     errors = models.TextField()
+    
+    @property
+    def has_errors(self):
+        return self.errors != ''
 
 class Patch(models.Model):
     name = models.CharField(max_length=255)
     priority = models.IntegerField()
     created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     patch = models.TextField()
     active = models.BooleanField()
     
