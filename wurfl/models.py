@@ -15,12 +15,15 @@ class Update(models.Model):
     nb_devices = models.IntegerField()
     errors = models.TextField()
     
-class Device(models.Model):
+class BaseDevice(models.Model):
     id = models.CharField(max_length=128, primary_key=True)
     user_agent = models.CharField(max_length=255, blank=True, db_index=True)
     fall_back = models.CharField(max_length=128, blank=True, db_index=True)
     actual_device_root = models.BooleanField()
     json_capabilities = models.TextField()
+    
+    class Meta:
+        abstract = True
     
     def get_capability(self, name):
         """
@@ -107,3 +110,16 @@ class Device(models.Model):
         self.capabilities = reduce(red_cap, [d.decode(c) for c in capabilities])
 
 
+class StandardDevice(BaseDevice):
+    pass
+
+    
+class HybridDevice(BaseDevice):
+    pass
+
+
+class PatchDevice(BaseDevice):
+    pass
+
+    
+Device = settings.USE_PATCH and HybridDevice or StandardDevice
