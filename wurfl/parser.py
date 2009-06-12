@@ -9,22 +9,20 @@ from django.db import IntegrityError
 
 
 class _Handler(sax.ContentHandler):
-    def __init__(self, device_class=None, update_class=None, merge=False):
+    def __init__(self, device_class=None, merge=False):
         # Parsing version flag
         self.parse_version = False
         # JSON encoder
         self.e = JSONEncoder()
         # Device class
         self.device_class = device_class
-        # Update class
-        self.update_class = update_class
         # are we merging?
         self.merge = merge
         
     def startElement(self, name, attrs):
         if name == 'wurfl':
             self.start_time = time()
-            self.stats = {'nb_devices':0, 'url':settings.URL, 'errors':0}
+            self.stats = {'nb_devices':0, 'errors':[], 'nb_merges':0}
         elif name == 'ver':
             self.stats['version'] = ''
             self.parse_version = True
@@ -56,23 +54,23 @@ class _Handler(sax.ContentHandler):
             # Save the device model
             if self.device_class:
                 try:
-                    self.device_class.objects.create(**self.device)
-                except IntegrityError:
-                    if self.merge:
-                        device = self.device_class.objects.get(id=self.device['id'])
-                        device.merge_json_capabilities(self.device['json_capabilities'])
-                        device.save()
-                    else:
-                        raise
-            
-            # Update the stats
-            self.stats['nb_devices'] += 1
+                    try:
+                        self.device_class.objects.create(**self.device)
+                        self.stats['nb_devices'] += 1
+                    except IntegrityError:
+                        if self.merge:
+                            device = self.device_class.objects.get(id=self.device['id'])
+                            device.merge_json_capabilities(self.device['json_capabilities'])
+                            device.save()
+                            self.stats['nb_merges'] += 1
+                        else:
+                            raise
+                except Exception, err:
+                    self.stats['errors'].append(str(err))
+
         elif name == 'wurfl':
             # End of the update
             self.stats['time_for_update'] = time() - self.start_time
-            
-            if self.update_class:
-                self.update_class.objects.create(**self.stats)
         elif name == 'ver':
             self.parse_version = False
             
@@ -81,10 +79,11 @@ class _Handler(sax.ContentHandler):
         if self.parse_version:
             self.stats['version'] += ch
         
-def parse_wurfl(content, device_class=StandardDevice, update_class=Update, merge=False):
+def parse_wurfl(content, device_class=StandardDevice, merge=False):
     parser = sax.make_parser()
-    handler = _Handler(device_class, update_class, merge)
+    handler = _Handler(device_class, merge)
     parser.setContentHandler(handler)
     parser.parse(content)
+    return handler.stats
     
 

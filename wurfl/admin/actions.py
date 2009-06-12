@@ -13,7 +13,7 @@ def build_patch():
     patches = Patch.objects.filter(active=True).order_by('priority', 'created')
     
     for patch in patches:
-        parse_wurfl(StringIO(patch.patch), device_class=PatchDevice, update_class=None, merge=True)
+        parse_wurfl(StringIO(patch.patch), device_class=PatchDevice, merge=True)
         
 def build_hybrid():
     # We assume both standard and and patch tables have been constructed successfully
