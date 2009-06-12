@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.simplejson.decoder import JSONDecoder
+from django.utils.simplejson.encoder import JSONEncoder
 from wurfl.conf import settings
 from wurfl.exceptions import NoMatch
 
@@ -14,6 +15,13 @@ class Update(models.Model):
     time_for_update = models.IntegerField()
     nb_devices = models.IntegerField()
     errors = models.TextField()
+
+class Patch(models.Model):
+    name = models.CharField(max_length=255)
+    priority = models.IntegerField()
+    created = models.DateTimeField(auto_now_add=True)
+    patch = models.TextField()
+    active = models.BooleanField()
     
 class BaseDevice(models.Model):
     id = models.CharField(max_length=128, primary_key=True)
@@ -109,6 +117,20 @@ class BaseDevice(models.Model):
             return x
         self.capabilities = reduce(red_cap, [d.decode(c) for c in capabilities])
 
+    def merge_json_capabilities(self, merge):
+        d = JSONDecoder()
+        e = JSONEncoder()
+        
+        capabilities = d.decode(self.json_capabilities)
+        capabilities_merge = d.decode(merge)
+        
+        for (group, props) in capabilities_merge.items():
+            if capabilities.has_key(group):
+                capabilities[group].update(props)
+            else:
+                capabilities[group] = props
+
+        self.json_capabilities = e.encode(capabilities)
 
 class StandardDevice(BaseDevice):
     pass
