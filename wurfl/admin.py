@@ -106,6 +106,12 @@ class UpdateAdmin(admin.ModelAdmin):
         request.user.message_set.create(message=_('WURFL build successfully'))        
         return HttpResponseRedirect(request.path + "../")
         
+    #def change_view(self, request, object_id, extra_context=None):
+    #    up = Update.objects.get(pk=object_id)
+    #    return render_to_response('admin/wurfl/update/change_form.html',
+    #        {'object':up,
+    #         'opts':self.model._meta},context_instance=RequestContext(request))
+    
     def get_urls(self):
         urls = super(UpdateAdmin, self).get_urls()
         my_urls = patterns('',
