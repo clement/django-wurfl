@@ -33,6 +33,13 @@ class BaseDevice(models.Model):
     class Meta:
         abstract = True
     
+    def __getitem__(self, key):
+        group = self.capabilities.get(key, None)
+        if not group:
+            return self.get_capability(key)
+        else:
+            return group
+
     def get_capability(self, name):
         """
         Get a capability from its name, without knowing the group
