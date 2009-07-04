@@ -9,6 +9,7 @@ from StringIO import StringIO
 
 
 def hybrid():
+    updates = []
     # First, truncate then build the patch table
     # :TODO: rewrite if/when a objects.truncate() becomes available
     PatchDevice.objects.all().delete()
@@ -28,18 +29,21 @@ def hybrid():
             stats['errors'].append('In patch `%s` : %s' % (patch.name,err,))
     
     # Save the patching stats
-    Update.objects.create(
-        update_type=Update.UPDATE_TYPE_PATCH,
-        nb_devices=stats.get('nb_devices',0),
-        nb_merges=stats.get('nb_merges',0),
-        errors='\n'.join(stats['errors']),
-        url='',
-        version='',
-        time_for_update=stats.get('time_for_update',0),
+    updates.append(
+        Update.objects.create(
+            update_type=Update.UPDATE_TYPE_PATCH,
+            nb_devices=stats.get('nb_devices',0),
+            nb_merges=stats.get('nb_merges',0),
+            errors='\n'.join(stats['errors']),
+            url='',
+            version='',
+            time_for_update=stats.get('time_for_update',0),
+        )
     )
     
     if stats.get('errors', False):
-        raise ParseError("Some errors were found when processing the patches")
+        # Bail out early
+        return updates
 
     # Prepare stats for hybrid
     stats = {'nb_devices':0, 'nb_merges':0, 'time_for_update':time(), 'errors':[]}
@@ -75,13 +79,13 @@ def hybrid():
     stats['time_for_update'] = time() - stats['time_for_update']
     stats['errors'] = '\n'.join(stats['errors'])
     # Save the hybrid stats
-    Update.objects.create(
-        update_type=Update.UPDATE_TYPE_HYBRID,
-        url='',
-        version='',
-        **stats
+    updates.append(
+        Update.objects.create(
+            update_type=Update.UPDATE_TYPE_HYBRID,
+            url='',
+            version='',
+            **stats
+        )
     )
         
-    if stats.get('errors', False):
-        raise ParseError("Some errors were found when building the hybrid table")
-
+    return tuple(updates)

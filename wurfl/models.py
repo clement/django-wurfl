@@ -12,13 +12,13 @@ class Update(models.Model):
     UPDATE_TYPE_WURFL = 0
     UPDATE_TYPE_PATCH = 1
     UPDATE_TYPE_HYBRID = 2
-    UPDATE_TYPE_CHOICES = (
-        (UPDATE_TYPE_WURFL, 'WURFL'),
-        (UPDATE_TYPE_PATCH, 'Patch'),
-        (UPDATE_TYPE_HYBRID, 'Hybrid'),
-    )
+    UPDATE_TYPE_CHOICES = {
+        UPDATE_TYPE_WURFL: 'WURFL',
+        UPDATE_TYPE_PATCH: 'Patch',
+        UPDATE_TYPE_HYBRID: 'Hybrid',
+    }
 
-    update_type = models.IntegerField(choices=UPDATE_TYPE_CHOICES)
+    update_type = models.IntegerField(choices=UPDATE_TYPE_CHOICES.items())
     version = models.CharField(max_length=255)
     url = models.URLField()
     update_date = models.DateTimeField(auto_now_add=True)
@@ -31,6 +31,14 @@ class Update(models.Model):
         return self.errors == ''
     no_errors.boolean = True
     no_errors.short_description = 'Status'
+    
+    @property
+    def summary(self):
+        return '\n'.join([
+            '- %s : %s' %(Update._meta.get_field(field).verbose_name, getattr(self,field))
+            for field in ['time_for_update', 'nb_devices', 'nb_merges', 'errors']
+            if getattr(self,field)
+        ])
 
 class Patch(models.Model):
     name = models.CharField(max_length=255)

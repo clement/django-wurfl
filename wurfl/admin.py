@@ -8,7 +8,8 @@ from django.template import RequestContext
 
 from wurfl import update
 from wurfl.models import Update, Patch
-from wurfl.exceptions import ParseError
+
+import operator
 
 class UpdateAdmin(admin.ModelAdmin):
     list_display = ('update_type', 'update_date', 'nb_devices', 'nb_merges', 'time_for_update', 'no_errors',)
@@ -16,11 +17,12 @@ class UpdateAdmin(admin.ModelAdmin):
     ordering = ('-update_date',)
     
     def update_hybrid_view(self, request):
-        try:
-            update.hybrid()
-            message = _('Hybrid table build successfully')
-        except ParseError:
+        updates = update.hybrid()
+
+        if any(map(operator.attrgetter('errors'), updates)):
             message = _('There was some errors when computing the hybrid table, please check the error report')
+        else:
+            message = _('Hybrid table build successfully')
 
         request.user.message_set.create(message=message)
         return HttpResponseRedirect(request.path + "../")
