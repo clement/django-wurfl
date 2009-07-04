@@ -77,7 +77,7 @@
     </div>
     <div class="form-row">
       <div class="field-box">
-          <label>{% trans "Time taken" %} :</label><p>{{ original.time_for_update }} s</p>
+          <label>{% trans "Time taken" %} :</label><p>{{ original.time_for_update_pretty }}</p>
           {% if original.f.time_for_update.help_text %}<p class="help">{{ original.f.time_for_update.help_text }}</p>{% endif %}
       </div>
     </div>

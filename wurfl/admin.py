@@ -16,7 +16,7 @@ from django.template import RequestContext
 
 
 class UpdateAdmin(admin.ModelAdmin):
-    list_display = ('update_type', 'update_date', 'nb_devices', 'nb_merges', 'time_for_update', 'no_errors',)
+    list_display = ('update_type', 'update_date', 'nb_devices', 'nb_merges', 'time_for_update_pretty', 'no_errors',)
     list_filter = ('update_date',)
     ordering = ('-update_date',)
     

@@ -3,7 +3,7 @@ from django.utils.simplejson.decoder import JSONDecoder
 from django.utils.simplejson.encoder import JSONEncoder
 from wurfl.conf import settings
 from wurfl.exceptions import NoMatch
-from wurfl.utils import FieldSubscript
+from wurfl.utils import FieldSubscript, pretty_duration
 
 from os.path import commonprefix
 from md5 import new as md5
@@ -23,7 +23,12 @@ class Update(models.Model):
     version = models.CharField(max_length=255)
     url = models.URLField()
     update_date = models.DateTimeField(auto_now_add=True)
+    
     time_for_update = models.IntegerField(help_text='the time taken to process that update')
+    def time_for_update_pretty(self):
+        return pretty_duration(self.time_for_update)
+    time_for_update_pretty.short_description = 'time for update'
+        
     nb_devices = models.IntegerField(help_text='the number of devices processed during that update')
     nb_merges = models.IntegerField(help_text='the number of merges done during that update')
     errors = models.TextField()
@@ -33,6 +38,7 @@ class Update(models.Model):
     no_errors.boolean = True
     no_errors.short_description = 'Status'
 Update.f = FieldSubscript(Update)
+
 
 class Patch(models.Model):
     name = models.CharField(max_length=255)
