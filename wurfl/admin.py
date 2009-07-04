@@ -11,10 +11,14 @@ from wurfl.parser import parse_wurfl
 from django.db import IntegrityError
 
 
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+
+
 class UpdateAdmin(admin.ModelAdmin):
-    list_display = ('update_type', 'update_date', 'version', 'url', 'nb_devices', 'nb_merges', 'time_for_update', 'has_errors',)
+    list_display = ('update_type', 'update_date', 'nb_devices', 'nb_merges', 'time_for_update', 'no_errors',)
     list_filter = ('update_date',)
-    search_fields = ('version', 'url',)
+    ordering = ('-update_date',)
     
     def update_hybrid_view(self, request):
         # First, truncate then build the patch table

@@ -2,6 +2,8 @@
 
 {% load adminmedia admin_list i18n %}
 
+{% block content_title %}<h1>{% trans "Update list" %}</h1>{% endblock %}
+
 {% block object-tools %}
 {% if has_add_permission %}
   <ul class="object-tools">

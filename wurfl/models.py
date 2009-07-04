@@ -27,9 +27,10 @@ class Update(models.Model):
     nb_merges = models.IntegerField()
     errors = models.TextField()
     
-    @property
-    def has_errors(self):
-        return self.errors != ''
+    def no_errors(self):
+        return self.errors == ''
+    no_errors.boolean = True
+    no_errors.short_description = 'Status'
 
 class Patch(models.Model):
     name = models.CharField(max_length=255)
