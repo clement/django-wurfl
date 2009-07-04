@@ -115,8 +115,8 @@ class BaseDevice(models.Model):
             return device[0]
         else:
             if settings.UA_PREFIX_MATCHING:
-                # Try more flexible matching
-                ds_user_agent = user_agent.split('/')[0]
+                # Try more flexible matching, 1 third of the UA string
+                ds_user_agent = user_agent[:len(user_agent)//3]
                 devices = cls.objects.filter(user_agent__startswith=ds_user_agent)
                 devices = devices.order_by('-actual_device_root')[:settings.UA_PREFIX_MATCHING_LIMIT]
                 
