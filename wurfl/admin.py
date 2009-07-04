@@ -20,6 +20,9 @@ class UpdateAdmin(admin.ModelAdmin):
     list_filter = ('update_date',)
     ordering = ('-update_date',)
     
+    def has_add_permission(self, request):
+        return False
+    
     def update_hybrid_view(self, request):
         # First, truncate then build the patch table
         # :TODO: rewrite if/when a objects.truncate() becomes available
