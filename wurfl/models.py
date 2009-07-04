@@ -3,6 +3,7 @@ from django.utils.simplejson.decoder import JSONDecoder
 from django.utils.simplejson.encoder import JSONEncoder
 from wurfl.conf import settings
 from wurfl.exceptions import NoMatch
+from wurfl.utils import FieldSubscript
 
 from os.path import commonprefix
 from md5 import new as md5
@@ -12,25 +13,26 @@ class Update(models.Model):
     UPDATE_TYPE_WURFL = 0
     UPDATE_TYPE_PATCH = 1
     UPDATE_TYPE_HYBRID = 2
-    UPDATE_TYPE_CHOICES = (
-        (UPDATE_TYPE_WURFL, 'WURFL'),
-        (UPDATE_TYPE_PATCH, 'Patch'),
-        (UPDATE_TYPE_HYBRID, 'Hybrid'),
-    )
+    UPDATE_TYPE_CHOICES = {
+        UPDATE_TYPE_WURFL: 'WURFL',
+        UPDATE_TYPE_PATCH: 'Patch',
+        UPDATE_TYPE_HYBRID: 'Hybrid',
+    }
 
-    update_type = models.IntegerField(choices=UPDATE_TYPE_CHOICES)
+    update_type = models.IntegerField(choices=UPDATE_TYPE_CHOICES.items())
     version = models.CharField(max_length=255)
     url = models.URLField()
     update_date = models.DateTimeField(auto_now_add=True)
-    time_for_update = models.IntegerField()
-    nb_devices = models.IntegerField()
-    nb_merges = models.IntegerField()
+    time_for_update = models.IntegerField(help_text='the time taken to process that update')
+    nb_devices = models.IntegerField(help_text='the number of devices processed during that update')
+    nb_merges = models.IntegerField(help_text='the number of merges done during that update')
     errors = models.TextField()
     
     def no_errors(self):
         return self.errors == ''
     no_errors.boolean = True
     no_errors.short_description = 'Status'
+Update.f = FieldSubscript(Update)
 
 class Patch(models.Model):
     name = models.CharField(max_length=255)

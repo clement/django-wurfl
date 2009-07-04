@@ -33,21 +33,21 @@
 
     <div class="form-row">
       <div class="field-box">
-          <label>{% trans "Type" %} :</label><p>{{ original.update_type }}</p>
-          <p class="help">no help</p>
+          <label>{% trans "Type" %} :</label><p>{{ original.get_update_type_display }}</p>
+          {% if original.f.update_type.help_text %}<p class="help">{{ original.f.update_type.help_text }}</p>{% endif %}
       </div>
     </div>
     <div class="form-row">
       <div class="field-box">
           <label>{% trans "Date of update" %} :</label><p>{{ original.update_date|date }}</p>
-          <p class="help">no help</p>
+          {% if original.f.update_date.help_text %}<p class="help">{{ original.f.update_date.help_text }}</p>{% endif %}
       </div>
     </div>
     {% if original.version %}
     <div class="form-row">
       <div class="field-box">
           <label>{% trans "Version" %} :</label><p>{{ original.version }}</p>
-          <p class="help">no help</p>
+          {% if original.f.version.help_text %}<p class="help">{{ original.f.version.help_text }}</p>{% endif %}
       </div>
     </div>
     {% endif %}
@@ -55,7 +55,7 @@
     <div class="form-row">
       <div class="field-box">
           <label>{% trans "URL" %} :</label><p>{{ original.url }}</p>
-          <p class="help">no help</p>
+          {% if original.f.url.help_text %}<p class="help">{{ original.f.url.help_text }}</p>{% endif %}
       </div>
     </div>
     {% endif %}
@@ -66,19 +66,19 @@
     <div class="form-row">
       <div class="field-box">
           <label>{% trans "Nb devices" %} :</label><p>{{ original.nb_devices }}</p>
-          <p class="help">no help</p>
+          {% if original.f.nb_devices.help_text %}<p class="help">{{ original.f.nb_devices.help_text }}</p>{% endif %}
       </div>
     </div>
     <div class="form-row">
       <div class="field-box">
           <label>{% trans "Nb merges" %} :</label><p>{{ original.nb_merges }}</p>
-          <p class="help">no help</p>
+          {% if original.f.nb_merges.help_text %}<p class="help">{{ original.f.nb_merges.help_text }}</p>{% endif %}
       </div>
     </div>
     <div class="form-row">
       <div class="field-box">
-          <label>{% trans "Time taken" %} :</label><p>{{ original.time_for_update }}</p>
-          <p class="help">no help</p>
+          <label>{% trans "Time taken" %} :</label><p>{{ original.time_for_update }} s</p>
+          {% if original.f.time_for_update.help_text %}<p class="help">{{ original.f.time_for_update.help_text }}</p>{% endif %}
       </div>
     </div>
 </fieldset>
