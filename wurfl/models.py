@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.encoding import force_unicode
 from django.utils.simplejson.decoder import JSONDecoder
 from django.utils.simplejson.encoder import JSONEncoder
 from wurfl.conf import settings
@@ -7,6 +8,7 @@ from wurfl.utils import FieldSubscript, pretty_duration
 
 from os.path import commonprefix
 from md5 import new as md5
+import Levenshtein
 
 
 class Update(models.Model):
@@ -121,14 +123,11 @@ class BaseDevice(models.Model):
                 devices = devices.order_by('-actual_device_root')[:settings.UA_PREFIX_MATCHING_LIMIT]
                 
                 if len(devices):
-                    best_match = 0
-                    best_device = None
-                    for device in devices:
-                        match = len(commonprefix([user_agent,device.user_agent]))
-                        if match > best_match:
-                            best_match = match
-                            best_device = device
-                    return best_device
+                    user_agent = force_unicode(user_agent)
+                    return reduce(
+                        lambda x,y: Levenshtein.distance(user_agent, x.user_agent) < Levenshtein.distance(user_agent, y.user_agent) and x or y,
+                        devices,
+                    )
             
             if settings.UA_GENERIC_FALLBACK:
                 # Try to match with generic properties
