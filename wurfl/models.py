@@ -112,7 +112,7 @@ class BaseDevice(models.Model):
         
         # cache the result
         if settings.USE_CACHE:
-            cache.set(cache_key, device)
+            cache.set(cache_key, device, settings.CACHE_TIMEOUT)
         
         return device
         
