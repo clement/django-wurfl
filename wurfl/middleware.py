@@ -8,6 +8,7 @@ class DeviceMiddleware(object):
         and add it to the request
         """
         try:
-            request.device = Device.get_from_user_agent(request.META.get('HTTP_USER_AGENT',''))
+            ua = request.META.get('HTTP_X_DEVICE_USER_AGENT', '') or request.META.get('HTTP_USER_AGENT', '')
+            request.device = Device.get_from_user_agent(ua)
         except NoMatch:
             request.device = None
