@@ -39,8 +39,15 @@ class Update(models.Model):
         return self.errors == ''
     no_errors.boolean = True
     no_errors.short_description = 'Status'
-Update.f = FieldSubscript(Update)
 
+    @property
+    def summary(self):
+        return '\n'.join([
+            '- %s : %s' %(Update._meta.get_field(field).verbose_name, getattr(self,field))
+            for field in ['time_for_update', 'nb_devices', 'nb_merges', 'errors']
+            if getattr(self,field)
+        ])
+Update.f = FieldSubscript(Update)
 
 class Patch(models.Model):
     name = models.CharField(max_length=255)
