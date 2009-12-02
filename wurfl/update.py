@@ -89,3 +89,22 @@ def hybrid():
     )
         
     return tuple(updates)
+
+
+def wurfl(handler, url=''):
+    try:
+        StandardDevice.objects.all().delete()
+        stats = parse_wurfl(handler)
+    except Exception, err:
+        stats = {'errors': [err]}
+    
+    # Save the patching stats
+    return Update.objects.create(
+        update_type=Update.UPDATE_TYPE_WURFL,
+        nb_devices=stats.get('nb_devices',0),
+        nb_merges=stats.get('nb_merges',0),
+        errors='\n'.join(stats['errors']),
+        url=url,
+        version=stats.get('version',''),
+        time_for_update=stats.get('time_for_update',0),
+    )
