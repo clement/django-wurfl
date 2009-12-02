@@ -131,10 +131,13 @@ class BaseDevice(models.Model):
                 
                 if len(devices):
                     user_agent = force_unicode(user_agent)
-                    return reduce(
+                    best = reduce(
                         lambda x,y: Levenshtein.distance(user_agent, x.user_agent) < Levenshtein.distance(user_agent, y.user_agent) and x or y,
                         devices,
                     )
+
+                    if Levenshtein.distance(user_agent, best.user_agent) <= settings.UA_PREFIX_MATCHING_MAX_DISTANCE:
+                        return best
             
             if settings.UA_GENERIC_FALLBACK:
                 # Try to match with generic properties
