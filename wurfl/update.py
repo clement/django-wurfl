@@ -3,11 +3,13 @@ from wurfl.parser import parse_wurfl
 from wurfl.exceptions import ParseError
 
 from django.db import IntegrityError
+from django.db import transaction
 
 from time import time
 from StringIO import StringIO
 
 
+@transaction.commit_manually
 def hybrid():
     updates = []
     # First, truncate then build the patch table
@@ -28,6 +30,10 @@ def hybrid():
         except Exception, err:
             stats['errors'].append('In patch `%s` : %s' % (patch.name,err,))
     
+    if stats.get('errors', False):
+        # Any problem and we roll back the deletion
+        transaction.rollback()
+
     # Save the patching stats
     updates.append(
         Update.objects.create(
@@ -43,6 +49,7 @@ def hybrid():
     
     if stats.get('errors', False):
         # Bail out early
+        transaction.commit()
         return updates
 
     # Prepare stats for hybrid
@@ -88,18 +95,21 @@ def hybrid():
         )
     )
         
+    transaction.commit()
     return tuple(updates)
 
 
+@transaction.commit_manually
 def wurfl(handler, url=''):
     try:
         StandardDevice.objects.all().delete()
         stats = parse_wurfl(handler)
     except Exception, err:
+        transaction.rollback()
         stats = {'errors': [err]}
     
     # Save the patching stats
-    return Update.objects.create(
+    u = Update.objects.create(
         update_type=Update.UPDATE_TYPE_WURFL,
         nb_devices=stats.get('nb_devices',0),
         nb_merges=stats.get('nb_merges',0),
@@ -108,3 +118,6 @@ def wurfl(handler, url=''):
         version=stats.get('version',''),
         time_for_update=stats.get('time_for_update',0),
     )
+    transaction.commit()
+
+    return u
