@@ -43,8 +43,8 @@ class UpdateAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(UpdateAdmin, self).get_urls()
         my_urls = patterns('',
-            url(r'^(.+)/hybrid/$', self.admin_site.admin_view(self.update_hybrid_view), name="admin_wurfl_update_hybrid"),
-            url(r'^(.+)/wurfl/$', self.admin_site.admin_view(self.update_wurfl_view), name="admin_wurfl_update_wurfl"),
+            url(r'^hybrid/$', self.admin_site.admin_view(self.update_hybrid_view), name="admin_wurfl_update_hybrid"),
+            url(r'^wurfl/$', self.admin_site.admin_view(self.update_wurfl_view), name="admin_wurfl_update_wurfl"),
         )
         return my_urls + urls
     
