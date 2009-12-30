@@ -23,7 +23,7 @@ class _Handler(sax.ContentHandler):
         self.merge = merge
         
     def startElement(self, name, attrs):
-        if name == 'wurfl':
+        if name in ('wurfl', 'wurfl_patch'):
             self.initialized = True
             self.start_time = time()
             self.stats = {'nb_devices':0, 'errors':[], 'nb_merges':0}
@@ -76,7 +76,7 @@ class _Handler(sax.ContentHandler):
                 except Exception, err:
                     self.stats['errors'].append(str(err))
 
-        elif name == 'wurfl':
+        elif name in ('wurfl', 'wurfl_patch'):
             # End of the update
             self.stats['time_for_update'] = time() - self.start_time
         elif name == 'ver':
