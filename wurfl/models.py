@@ -7,7 +7,12 @@ from wurfl.exceptions import NoMatch
 from wurfl.utils import FieldSubscript, pretty_duration
 
 from os.path import commonprefix
-from md5 import new as md5
+try:
+    from hashlib import md5
+# Python2.4 compat
+except ImportError:
+    from md5 import new as md5
+
 import Levenshtein
 
 
