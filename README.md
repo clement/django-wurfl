@@ -2,7 +2,20 @@ django-wurfl in 15 seconds
 ==========================
 
 How to install it
-----------------
+-----------------
+
+### Dependencies
+
+django-wurfl use the *python-Levenshtein* package. However, the hosting site is defunct, so
+
+    john@doe:~# sudo easy_install python-Levenshtein
+
+probably won't work. You can however still get the source code from
+[Michael Noll's website](http://www.michael-noll.com/wiki/Python-Levenshtein)
+and install it manually.
+
+
+### Setup
 
 Put the `wurfl` folder somewhere on your python path. Then add in your settings
 file :
