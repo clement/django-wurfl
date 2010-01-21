@@ -19,4 +19,8 @@ class Command(BaseCommand):
             print '-- %s Update --' % u.get_update_type_display()
             print u.summary
         except Exception, e:
-            raise CommandError(e)
+            if options.get('traceback', False):
+                import traceback
+                traceback.print_exc()
+            else:
+                raise CommandError(e)

@@ -46,4 +46,8 @@ class Command(BaseCommand):
             )
             print 'Created patch `%s` with id %d' % (name, p.pk)
         except Exception, e:
-            raise CommandError(e)
+            if options.get('traceback', False):
+                import traceback
+                traceback.print_exc()
+            else:
+                raise CommandError(e)
