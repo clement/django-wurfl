@@ -161,10 +161,24 @@ class BaseDevice(models.Model):
 
         # JSON decoder
         d = JSONDecoder()
+        
+        # Reverse the device order (root parent device on down to child device)
         capabilities.reverse()
+        
+        # red_cap combines grouped capability dictionaries from two devices
+        # x is assumed to be a parent of y (as per the WURFL fallback scheme)
         def red_cap(x,y):
-            x.update(y)
+            # For each group in y, check if group exists in x
+            for group in iter(y):
+                if group in x:
+                    # If the group already exists in x, update the corresponding capability dictionary
+                    x[group].update(y[group])
+                else:
+                    # Otherwise create a group in x with y's capability dictionary
+                    x[group] = y[group]
+            
             return x
+        
         self.capabilities = reduce(red_cap, [d.decode(c) for c in capabilities])
 
     def merge_json_capabilities(self, merge):
