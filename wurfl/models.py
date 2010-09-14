@@ -147,7 +147,7 @@ class BaseDevice(models.Model):
             if settings.UA_GENERIC_FALLBACK:
                 # Try to match with generic properties
                 # :TODO:
-                raise NotImplemented
+                raise NotImplementedError, 'Generic properties matching is not implemented'
 
         raise NoMatch, "Can't find a match in currently installed WURFL table for user_agent `%s`" % user_agent
 
