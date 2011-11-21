@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils.encoding import force_unicode
-from django.utils.simplejson.decoder import JSONDecoder
-from django.utils.simplejson.encoder import JSONEncoder
+from django.utils import simplejson
 from wurfl.conf import settings
 from wurfl.exceptions import NoMatch
 from wurfl.utils import FieldSubscript, pretty_duration
@@ -160,7 +159,7 @@ class BaseDevice(models.Model):
             capabilities.append(parent.json_capabilities)
 
         # JSON decoder
-        d = JSONDecoder()
+        d = simplejson.JSONDecoder()
         
         # Reverse the device order (root parent device on down to child device)
         capabilities.reverse()
@@ -182,8 +181,8 @@ class BaseDevice(models.Model):
         self.capabilities = reduce(red_cap, [d.decode(c) for c in capabilities])
 
     def merge_json_capabilities(self, merge):
-        d = JSONDecoder()
-        e = JSONEncoder()
+        d = simplejson.JSONDecoder()
+        e = simplejson.JSONEncoder()
         
         capabilities = d.decode(self.json_capabilities)
         capabilities_merge = d.decode(merge)
