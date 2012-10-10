@@ -3,7 +3,7 @@ from wurfl.models import Update, StandardDevice
 from wurfl.exceptions import ParseError
 
 from xml import sax
-from django.utils.simplejson.encoder import JSONEncoder
+from django.utils import simplejson
 from time import time
 
 from django.db import IntegrityError
@@ -16,7 +16,7 @@ class _Handler(sax.ContentHandler):
         # Parsing version flag
         self.parse_version = False
         # JSON encoder
-        self.e = JSONEncoder()
+        self.e = simplejson.JSONEncoder()
         # Device class
         self.device_class = device_class
         # are we merging?
